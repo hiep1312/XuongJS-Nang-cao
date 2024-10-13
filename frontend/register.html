@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>VSnacks - Đăng ký</title>
+        <link rel="icon" href="./admin/assets/img/logo.png" type="image/x-icon">
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h1 class="display-4 fw-bolder">VSnacks</h1>
+                    <p class="lead fw-normal text-white-50 mb-0">
+                        <ol class="breadcrumb justify-content-center" style="--bs-breadcrumb-divider: '>';">
+                            <li class="breadcrumb-item"><a href="./index.html" class="text-decoration-none">Trang chủ</a></li>
+                            <li class="breadcrumb-item active"><a href="./register.html" class="text-decoration-none">Đăng ký</a></li>
+                        </ol>
+                    </p>
+                </div>
+            </div>
+        </header>
+        <form class="container border border-secondary border-1 rounded-2 mx-auto my-3 p-3" id="register">
+            <h1 class="mb-2">Đăng ký tài khoản</h1>
+            <div class="mb-3">
+                <label for="fullName" class="form-label">Họ và tên của bạn</label>
+                <input type="text" class="form-control" id="fullName" aria-describedby="fullName">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Địa chỉ email</label>
+                <input type="email" class="form-control" id="email" aria-describedby="emailHelp">
+                <div id="emailHelp" class="form-text">Chúng tôi sẽ bảo mật email của bạn bằng mã hóa tiên tiến</div>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Mật khẩu</label>
+                <input type="password" class="form-control" id="password">
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                <label class="form-check-label" for="exampleCheck1">Giữ đăng nhập</label>
+            </div>
+            <div class="mb-3 d-none" id="message">
+
+            </div>
+            <div class="d-block text-center">
+                <button type="submit" class="btn btn-outline-primary">Đăng ký tài khoản</button>
+                <a href="./login.html" class="btn btn-success ms-2">Bạn đã có tài khoản?</a>
+            </div>
+        </form>
+        <footer class="py-5 bg-dark">
+            <div class="container"><p class="m-0 text-center text-white"> &copy; Bản quyền thuộc về <strong><span>VSnacks</span></strong>. Tất cả đều được bảo lưu</p></div>
+        </footer>
+        <script>
+            const name = document.getElementById('fullName');
+            const email = document.getElementById('email');
+            const password = document.getElementById('password');
+            const message  = document.getElementById('message');
+            const frmRegister = document.getElementById('register');
+            frmRegister.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                message.classList.add('d-none');
+                if(validate(email.value, password.value)){
+                    const data = {
+                        name: name.value,
+                        email: email.value,
+                        password: password.value,
+                        role: 'user'
+                    };
+                    try {
+                        const response = await fetch("http://localhost:3000/users", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify(data)
+                        });
+                        if(response.ok){
+                            const user = await response.json();
+                            message.classList.remove('d-none');
+                            message.innerHTML = `
+                                <p class="alert alert-success">Đăng ký thành công</p>
+                                <p class="alert alert-primary">Tự động chuyển hướng sang trang chủ trong 3</p>
+                            `;
+                            localStorage.setItem('user', JSON.stringify(user));
+                            setTimeout(() => {window.location = "index.html"}, 3000);
+                        }else{
+                            message.classList.remove('d-none');
+                            message.classList.remove('text-success');
+                            message.classList.add('text-danger');
+                            message.innerHTML = `
+                                <p class="alert alert-danger">Đăng ký thất bại</p>
+                            `;
+                        }
+                    }catch(err) {
+                        console.error(err);
+                    }
+                }else{
+                    message.classList.remove('d-none');
+                    message.innerHTML = `
+                        <p class="alert alert-danger">Email phải đúng định dạng</p>
+                        <p class="alert alert-danger mt-3">Password phải 5 ký tự trở nên</p>
+                    `;
+                }
+            },false);
+            const validate = (email, password) => {
+                return /^[^@.\s]+@[a-zA-Z]{3,7}\.([a-zA-Z]{1,5}|[a-zA-Z]{1,5}\.[a-zA-Z]{1,5})$/.test(email) && password.length > 5;
+            }
+        </script>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
